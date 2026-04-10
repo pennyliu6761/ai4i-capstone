@@ -1,0 +1,10 @@
+streamlit>=1.32
+scikit-learn>=1.4
+xgboost>=2.0
+lightgbm>=4.0
+imbalanced-learn>=0.12
+pytorch-tabnet>=4.0
+torch>=2.0
+plotly>=5.18
+pandas>=2.0
+numpy>=1.26
