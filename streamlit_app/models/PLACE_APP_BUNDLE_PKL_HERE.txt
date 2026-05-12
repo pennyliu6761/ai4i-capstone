@@ -1,0 +1,1 @@
+請將 Colab Cell 12 產生的 app_bundle.pkl 放置於此目錄

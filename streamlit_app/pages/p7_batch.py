@@ -1,4 +1,4 @@
-"""p7_batch.py — 批次預測上傳器"""
+"""p7_batch.py — 批次預測上傳器（v6）"""
 import warnings; warnings.filterwarnings('ignore')
 import streamlit as st
 import plotly.graph_objects as go
@@ -6,14 +6,13 @@ import pandas as pd, numpy as np, io
 from pages.loader import (load_bundle, FAILURE_LABELS, FAILURE_LONG,
                            FAILURE_SHORT, FAIL_COLORS, sec, plotly_base)
 
-FEAT_COLS = ['Air temperature [K]','Process temperature [K]',
-             'Rotational speed [rpm]','Torque [Nm]','Tool wear [min]',
-             'Power','Power wear','Temperature difference',
-             'Temperature power','Type_L','Type_M']
-INPUT_COLS = ['Type','Air temperature [K]','Process temperature [K]',
-              'Rotational speed [rpm]','Torque [Nm]','Tool wear [min]']
+# FEAT_COLS 從 bundle 動態取得，見 show() 函式
+# INPUT_COLS：使用者上傳 CSV 的原始欄位名
+INPUT_COLS = ['Type', 'Air temperature [K]', 'Process temperature [K]',
+              'Rotational speed [rpm]', 'Torque [Nm]', 'Tool wear [min]']
 
 def preprocess(df_raw):
+    """從使用者 CSV（原始欄位名）計算衍生特徵，輸出 FEAT_COLS_SAFE 格式"""
     df = df_raw.copy()
     df['Power']                  = df['Rotational speed [rpm]'] * df['Torque [Nm]']
     df['Power wear']             = df['Power'] * df['Tool wear [min]']
@@ -22,15 +21,23 @@ def preprocess(df_raw):
         df['Temperature difference']/df['Power'], 0.0)
     df['Type_L'] = (df['Type'].str.upper()=='L').astype(int)
     df['Type_M'] = (df['Type'].str.upper()=='M').astype(int)
+    # 重新命名為 FEAT_COLS_SAFE 格式
+    df = df.rename(columns={
+        'Air temperature [K]':     'Air temperature K',
+        'Process temperature [K]': 'Process temperature K',
+        'Rotational speed [rpm]':  'Rotational speed rpm',
+        'Torque [Nm]':             'Torque Nm',
+        'Tool wear [min]':         'Tool wear min',
+    })
     return df
 
 def stage1_flag(row):
     """第一階段規則旗標（正確物理公式）"""
     import math
     flags = []
-    wear  = float(row.get('Tool wear [min]',0))
-    rpm   = float(row.get('Rotational speed [rpm]',0))
-    torque= float(row.get('Torque [Nm]',0))
+    wear  = float(row.get('Tool wear [min]', row.get('Tool wear min', 0)))
+    rpm   = float(row.get('Rotational speed [rpm]', row.get('Rotational speed rpm', 0)))
+    torque= float(row.get('Torque [Nm]', row.get('Torque Nm', 0)))
     td    = float(row.get('Temperature difference',0))
     t     = str(row.get('Type','M')).upper()
     power_w     = rpm * 2 * math.pi / 60 * torque   # 正確功率（W）
@@ -43,9 +50,10 @@ def stage1_flag(row):
     return '、'.join(flags) if flags else '—'
 
 def show():
-    b       = load_bundle()
-    scaler  = b['scaler']
-    models  = b['models']
+    b         = load_bundle()
+    scaler    = b['scaler']
+    models    = b['models']
+    FEAT_COLS = b['feat_cols']   # 與 scaler 一致
 
     st.markdown("# 📂 批次預測上傳器")
     st.markdown("""<p style='color:#8888aa;margin-top:-.4rem'>

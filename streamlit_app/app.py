@@ -44,15 +44,16 @@ with st.sidebar:
     st.markdown("""
     <div style='font-size:.76rem;color:#f7c47b;background:#1a1400;border:1px solid #f7c47b;
                 border-radius:8px;padding:.6rem .9rem;margin-bottom:.7rem;line-height:1.9'>
-    <b>第一階段：EDA 規則決策</b><br>
-    RNF → 排除，不建模<br>
-    TWF → 磨耗>200min 換刀警示
+    <b>第一階段：故障可診斷性篩選</b><br>
+    RNF → 純隨機，排除不建模<br>
+    TWF → 半隨機，Stage 1 保留觀察<br>
+    磨耗 &gt; 200 min → 發出換刀警示
     </div>
     <div style='font-size:.76rem;color:#4cde80;background:#0a1a0f;border:1px solid #4cde80;
                 border-radius:8px;padding:.6rem .9rem;margin-bottom:1rem;line-height:1.9'>
     <b>第二階段：ML/DL 智慧分類</b><br>
-    HDF ‧ PWF ‧ OSF → 6 個模型<br>
-    最佳 MCC = 0.9736
+    HDF ‧ PWF ‧ OSF → 10 個模型<br>
+    最佳 LightGBM MCC = 0.9291
     </div>
     """, unsafe_allow_html=True)
     st.markdown("##### 📍 頁面導覽")
@@ -69,7 +70,7 @@ with st.sidebar:
     st.markdown("""
     <div style='font-size:.74rem;color:#6666aa;line-height:1.9'>
     <b style='color:#8888cc'>資料集</b><br>AI4I 2020 · 10,000 筆<br><br>
-    <b style='color:#8888cc'>最佳模型</b><br>Random Forest · MCC=0.9736<br><br>
+    <b style='color:#8888cc'>Stage 2 最佳模型</b><br>LightGBM · MCC=0.9291<br><br>
     <b style='color:#8888cc'>系所</b><br>工業工程與管理學系<br>畢業專題
     </div>
     """, unsafe_allow_html=True)
