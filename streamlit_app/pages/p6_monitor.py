@@ -256,11 +256,11 @@ def show():
                     'pred_cls':  pcls,
                     'conf':      float(prob[pcls]),
                     'all_probs': prob.tolist(),
-                    'Air temperature K':     float(row['Air temperature K']),
-                    'Process temperature K': float(row['Process temperature K']),
-                    'Rotational speed rpm':  float(row['Rotational speed rpm']),
-                    'Torque Nm':             float(row['Torque Nm']),
-                    'Tool wear min':         float(row['Tool wear min']),
+                    'air_temp':  float(row.get('Air temperature [K]', 0)),
+                    'proc_temp': float(row.get('Process temperature [K]', 0)),
+                    'rpm':       float(row.get('Rotational speed [rpm]', 0)),
+                    'torque':    float(row.get('Torque [Nm]', 0)),
+                    'wear':      float(row.get('Tool wear [min]', 0)),
                     'Power':                   float(row.get('Power', 0)),
                 }
                 # 只保留窗口大小 × 2 的歷史（防止串列無限增長）
